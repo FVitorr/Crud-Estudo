@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Pessoa } from '../model/pessoa';
+import { Pessoa } from '../../shared/model/pessoa';
 import { Cidade } from '../../cidade/model/cidade';
 import { PessoaFormComponent } from '../pessoa-form/pessoa-form.component';
 import { MatDialog } from '@angular/material/dialog';
 import { catchError, Observable, of } from 'rxjs';
 import { CidadeService } from '../../cidade/services/cidade.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PessoaService } from '../services/pessoa.service';
+import { PessoaService } from '../../services/pessoa.service';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-pessoa',
@@ -15,11 +16,10 @@ import { PessoaService } from '../services/pessoa.service';
 })
 export class PessoaComponent implements OnInit {
   cidades$: Observable<Cidade[]>;
-  pessoas$: Observable<Pessoa[]>;
-
+  pessoas$: Observable<any>; // Ajustado para lidar com paginação
   displayedColumns: string[] = ['id', 'nome', 'time', 'cpf', 'hobbie', 'cidade', 'action'];
   dataSource: Pessoa[] = [];
-
+  pageEvent: PageEvent;
   editMode: { [key: number]: boolean } = {}; 
   editedPessoa: { [key: number]: Pessoa } = {}; 
 
@@ -36,19 +36,22 @@ export class PessoaComponent implements OnInit {
         return of([]);
       })
     );
+  }
 
-    this.pessoas$ = this.pessoaService.findAll().pipe(
+  ngOnInit(): void {
+    this.loadPessoas(0, 10); // Carrega a primeira página com 10 itens
+  }
+
+  loadPessoas(page: number, size: number): void {
+    this.pessoas$ = this.pessoaService.buscarTodasPessoas(page, size, {}).pipe(
       catchError(error => {
         console.log(error);
         this.showErrorMessage('Erro ao carregar pessoas.');
         return of([]);
       })
     );
-  }
-  
-  ngOnInit(): void {
     this.pessoas$.subscribe(pessoas => {
-      this.dataSource = pessoas;
+      this.dataSource = pessoas.content; // Acessa o conteúdo paginado
     });
   }
 
@@ -60,14 +63,8 @@ export class PessoaComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: Pessoa | undefined) => {
       if (result) {
-        this.pessoaService.create(result).subscribe(() => {
-          this.pessoas$ = this.pessoaService.findAll().pipe(
-            catchError(error => {
-              console.log(error);
-              this.showErrorMessage('Erro ao carregar pessoas.');
-              return of([]);
-            })
-          );
+        this.pessoaService.salvar(result).subscribe(() => {
+          this.loadPessoas(0, 10); // Recarrega a primeira página após a adição
         });
       }
     });
@@ -75,10 +72,10 @@ export class PessoaComponent implements OnInit {
 
   onDelete(id: number): void {
     if (confirm('Tem certeza que deseja excluir esta pessoa?')) {
-      this.pessoaService.delete(id).subscribe({
+      this.pessoaService.apagar(id).subscribe({
         next: () => {
           this.showSuccessMessage('Pessoa excluída com sucesso.');
-          this.pessoas$ = this.pessoaService.findAll(); // Atualiza a lista após a exclusão
+          this.loadPessoas(0, 10); // Atualiza a lista após a exclusão
         },
         error: (err) => {
           this.showErrorMessage('Erro ao excluir pessoa.');
@@ -99,20 +96,21 @@ export class PessoaComponent implements OnInit {
     this.editMode[pessoa.id] = false;
     delete this.editedPessoa[pessoa.id];
   }
+
   validateCPF(cpf: string): boolean {
     if (!this.isValidCPF(cpf)) {
-      this.showErrorMessage('CPF invalido');
-      return false
-    }return true
+      this.showErrorMessage('CPF inválido');
+      return false;
+    }
+    return true;
   }
 
   onSave(pessoa: Pessoa): void {
     if (this.editedPessoa[pessoa.id] && this.validateCPF(this.editedPessoa[pessoa.id].cpf)) {
-      
-      this.pessoaService.update(pessoa.id, this.editedPessoa[pessoa.id]).subscribe({
+      this.pessoaService.atualizar(this.editedPessoa[pessoa.id]).subscribe({
         next: () => {
           this.showSuccessMessage('Pessoa atualizada com sucesso.');
-          this.pessoas$ = this.pessoaService.findAll(); // Atualiza a lista após a edição
+          this.loadPessoas(0, 10); // Atualiza a lista após a edição
         },
         error: (err) => {
           this.showErrorMessage('Erro ao atualizar pessoa.');
@@ -126,9 +124,8 @@ export class PessoaComponent implements OnInit {
   onCidadeChange(selectedId: string, pessoa: Pessoa): void {
     this.cidadeService.findAll().subscribe(cidades => {
       const selectedCidade = cidades.find(cidade => cidade.id.toString() === selectedId);
-      console.log(selectedCidade)
       if (selectedCidade) {
-        this.editedPessoa[pessoa.id].cidade = selectedCidade
+        this.editedPessoa[pessoa.id].cidade = selectedCidade;
       }
     });
   }

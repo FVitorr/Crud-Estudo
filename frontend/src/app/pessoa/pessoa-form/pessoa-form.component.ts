@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Pessoa } from '../model/pessoa';
+import { Pessoa } from '../../shared/model/pessoa';
 import { Cidade } from '../../cidade/model/cidade';
 import { MatDialogRef } from '@angular/material/dialog';
 import { catchError, Observable, of } from 'rxjs';
