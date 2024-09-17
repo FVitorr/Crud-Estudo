@@ -1,0 +1,30 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+button{
+  margin-left: 1rem;
+  width: 100px;
+  height: 38px;
+  border-radius: 0.5rem;
+  background-color: #3F51B5;
+  color: white;
+  border: 1px  solid white;
+  font-size: 14px;
+  &:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+  }
+}
+
+.footer{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap:0;
+
+  font-size: 14px;
+  padding: 1rem;
+  margin: 0;
+}

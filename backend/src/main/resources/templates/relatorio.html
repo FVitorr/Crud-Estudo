@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Relatório de Informaçoes - Pessoa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100%;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .toolbar{
+            background-color: #f2f2f2;
+            text-align: center;
+            >p{
+                font-size: 13px;
+                letter-spacing: 2px;
+            }
+        }
+
+        .header{
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .subheader {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="toolbar">
+    <img src="https://celulaweb.com.br/wp-content/uploads/2018/05/cropped-logo_celula.png" alt="Célula Web"
+         style="width: 60px; margin-bottom: 10px"></img>
+    <div class="header">CÉLULA WEB</div>
+    <div class="subheader">RELATÓRIO DE INFORMAÇÕES</div>
+    <p>Acessado em: <span th:text="${acessoData}"></span> | Edição: 1 | Seção: 1 | Pagina: 1</p>
+</div>
+<div class="header">Pessoa</div>
+<div class="content">
+    <table>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+        <tr>
+            <td>Nome</td>
+            <td th:text="${pessoa.nome}"></td>
+        </tr>
+        <tr>
+            <td>CPF</td>
+            <td th:text="${pessoa.cpf}"></td>
+        </tr>
+        <tr>
+            <td>Hobbie</td>
+            <td th:text="${pessoa.hobbie}"></td>
+        </tr>
+        <tr>
+            <td>Time</td>
+            <td th:text="${pessoa.time}"></td>
+        </tr>
+    </table>
+    <div class="header">Cidade</div>
+    <table>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+        <tr>
+            <td>Cidade</td>
+            <td th:text="${pessoa.cidade.cidade}"></td>
+        </tr>
+        <tr>
+            <td>UF</td>
+            <td th:text="${pessoa.cidade.estado}"></td>
+        </tr>
+        <tr>
+            <td>População</td>
+            <td th:text="${pessoa.cidade.populacao}"></td>
+        </tr>
+    </table>
+</div>
+<div class="footer">
+    <p>Este relatório faz parte de um projeto CRUD desenvolvido pela Célula Web, utilizando Angular para a construção da
+        interface do usuário e Spring Boot para a criação da API de backend. O projeto visa fornecer uma solução
+        eficiente e escalável para a gestão de dados de pessoas, permitindo a criação, leitura, atualização e exclusão
+        de registros de forma intuitiva e ágil.</p>
+    <p>A Célula Web é uma empresa comprometida com a inovação e a excelência em desenvolvimento de software, oferecendo
+        soluções personalizadas que atendem às necessidades específicas de cada cliente. Para mais informações sobre
+        nossos serviços e projetos, visite nosso <a href="https://celulaweb.com.br/">site</a> ou entre em
+        <a href="https://celulaweb.com.br/fale-conosco/"> contato </a> a com nossa equipe.
+    </p>
+</div>
+</body>
+</html>
